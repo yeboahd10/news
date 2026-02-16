@@ -23,7 +23,7 @@ function App() {
             <Route path="/admin/edit/:id" element={<AdminEditor />} />
           </Routes>
         </main>
-        <footer className=" text-slate-300 text-center py-2 text-sm">
+        <footer className=" text-black text-center py-2 text-sm">
 				© EchoNews 2026. All rights reserved.
 			</footer>
       </div>

@@ -23,7 +23,7 @@ export default function Home() {
   return (
     <section className="max-w-6xl mx-auto px-4 py-8 space-y-6">
       <header className="flex items-center justify-between">
-        <h1 className="text-2xl font-extrabold">Top Trending</h1>
+        <h1 className="text-2xl text-black font-extrabold">Top Trending</h1>
       </header>
 
       {CATEGORIES.map(cat => {
@@ -52,10 +52,10 @@ export default function Home() {
                 else timeLabel = `${Math.floor(diffSec / 86400)}d ago`
 
                 return (
-                  <article key={item.id} onClick={() => navigate(`/article/${item.id}`)} className="cursor-pointer flex items-start gap-4 bg-white/80 dark:bg-slate-800 rounded-lg shadow-sm hover:shadow-md transition-shadow overflow-hidden">
-                    <img src={item.image} alt="" className="w-32 h-24 object-cover flex-shrink-0" />
-                    <div className="p-4 flex-1">
-                      <h3 className="text-lg font-semibold leading-snug text-slate-900 dark:text-slate-100">{item.title}</h3>
+                  <article key={item.id} onClick={() => navigate(`/article/${item.id}`)} className="cursor-pointer flex items-stretch gap-4 bg-white/80  rounded-lg shadow-sm hover:shadow-md transition-shadow overflow-hidden">
+                    <img src={item.image} alt="" className="w-32 h-auto object-cover flex-shrink-0" />
+                    <div className="p-4 flex-1 flex flex-col justify-between">
+                      <h3 className="text-sm font-semibold leading-snug text-slate-900 dark:text-slate-100">{item.title}</h3>
                       <div className="flex items-center justify-between mt-2">
                         <div className="text-xs text-slate-500">{item.category}</div>
                         <div className="text-xs text-slate-400">{timeLabel}</div>

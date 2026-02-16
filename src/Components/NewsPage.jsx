@@ -59,10 +59,10 @@ export default function NewsPage() {
   return (
     <article className={`max-w-4xl mx-auto px-4 py-8 transition-opacity duration-300 ${visible ? 'opacity-100' : 'opacity-0'}`}>
       <button onClick={() => navigate(-1)} className="mb-4 text-sm text-slate-700 hover:underline">← Back</button>
-      <h1 className="text-2xl font-bold mb-4">{item.title}</h1>
+      <h1 className="text-2xl font-bold mb-4 text-black ">{item.title}</h1>
       <img src={item.image} alt={item.title} className="w-full h-auto rounded-md mb-6 object-cover" />
 
-      <div className="prose max-w-none text-slate-700 dark:text-slate-200 mb-6">
+      <div className="prose max-w-none text-black  dark:text-slate-200 mb-6">
         <p>{item.details}</p>
       </div>
 
