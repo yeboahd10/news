@@ -1,0 +1,150 @@
+import React, { useState, useEffect } from 'react'
+import { useNavigate, useParams } from 'react-router-dom'
+import { CATEGORIES } from '../data/news'
+import { db } from '../firebase'
+import { collection, addDoc, serverTimestamp, doc, getDoc, updateDoc } from 'firebase/firestore'
+
+export default function AdminEditor() {
+  const navigate = useNavigate()
+  const { id } = useParams()
+  const [title, setTitle] = useState('')
+  const [image, setImage] = useState('')
+  const [text, setText] = useState('')
+  const [selected, setSelected] = useState([])
+  const [saving, setSaving] = useState(false)
+  const [loading, setLoading] = useState(false)
+
+  useEffect(() => {
+    if (!id) return
+    setLoading(true)
+    ;(async () => {
+      try {
+        const ref = doc(db, 'news', id)
+        const snap = await getDoc(ref)
+        if (snap.exists()) {
+          const data = snap.data()
+          setTitle(data.title || '')
+          setImage(data.image || '')
+          setText(data.details || '')
+          setSelected(data.category ? [data.category] : [])
+        } else {
+          alert('Article not found')
+          navigate('/admin')
+        }
+      } catch (err) {
+        console.error('Error loading article for edit:', err)
+        alert('Failed to load article for editing')
+      } finally {
+        setLoading(false)
+      }
+    })()
+  }, [id])
+
+  function toggleCategory(cat) {
+    setSelected(prev => prev.includes(cat) ? prev.filter(c => c !== cat) : [...prev, cat])
+  }
+
+  function publish() {
+    if (!title.trim()) return alert('Please enter a title')
+    if (selected.length === 0) return alert('Select at least one category')
+
+    setSaving(true)
+
+    // safety timeout to avoid being stuck indefinitely
+    const timeout = setTimeout(() => {
+      if (saving) setSaving(false)
+    }, 12000)
+
+    ;(async () => {
+      try {
+        if (id) {
+          // update existing doc: set to first selected category
+          const primary = selected[0]
+          await updateDoc(doc(db, 'news', id), {
+            category: primary,
+            title: title.trim(),
+            image: image || `https://picsum.photos/seed/${Math.floor(Math.random()*1000)}/1200/600`,
+            details: text || 'No additional details provided.',
+            updatedAt: serverTimestamp()
+          })
+          // if additional categories selected, create new docs for them
+          const extras = selected.slice(1)
+          const extraTasks = extras.map(cat => addDoc(collection(db, 'news'), {
+            category: cat,
+            title: title.trim(),
+            image: image || `https://picsum.photos/seed/${Math.floor(Math.random()*1000)}/1200/600`,
+            details: text || 'No additional details provided.',
+            createdAt: serverTimestamp()
+          }))
+          if (extraTasks.length) await Promise.all(extraTasks)
+        } else {
+          const tasks = selected.map(cat => addDoc(collection(db, 'news'), {
+            category: cat,
+            title: title.trim(),
+            image: image || `https://picsum.photos/seed/${Math.floor(Math.random()*1000)}/1200/600`,
+            details: text || 'No additional details provided.',
+            createdAt: serverTimestamp()
+          }))
+          await Promise.all(tasks)
+        }
+
+        alert(id ? 'Updated successfully' : 'Published successfully')
+        setTitle('')
+        setImage('')
+        setText('')
+        setSelected([])
+        navigate('/admin/list')
+      } catch (err) {
+        console.error('Error publishing/editing:', err)
+        alert(`Failed to save: ${err?.message || err}`)
+      } finally {
+        clearTimeout(timeout)
+        setSaving(false)
+      }
+    })()
+  }
+
+  return (
+    <section className="max-w-3xl mx-auto px-4 py-8">
+      <h1 className="text-2xl font-bold mb-4">Admin Editor</h1>
+      {loading && <div className="text-sm text-slate-500 mb-2">Loading article...</div>}
+
+      <div className="space-y-4">
+        <div>
+          <label className="block text-sm font-medium mb-1">Categories</label>
+          <div className="flex flex-wrap gap-3">
+            {CATEGORIES.map(cat => (
+              <label key={cat} className="flex items-center gap-2 text-sm">
+                <input type="checkbox" checked={selected.includes(cat)} onChange={() => toggleCategory(cat)} />
+                <span>{cat}</span>
+              </label>
+            ))}
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-1">Title</label>
+          <input value={title} onChange={e => setTitle(e.target.value)} className="w-full border rounded px-3 py-2" placeholder="Article title" />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-1">Image URL</label>
+          <input value={image} onChange={e => setImage(e.target.value)} className="w-full border rounded px-3 py-2" placeholder="https://... or leave blank for placeholder" />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-1">Text</label>
+          <textarea value={text} onChange={e => setText(e.target.value)} className="w-full border rounded px-3 py-2 min-h-[140px]" placeholder="Write the article body or excerpt here..."></textarea>
+        </div>
+
+        <div className="flex items-center gap-3">
+          <div className="flex flex-col gap-4">
+            <button onClick={publish} disabled={saving} className="bg-indigo-800 text-white px-4 py-2 rounded hover:bg-indigo-700">{saving ? 'Saving...' : 'Publish'}</button>
+            <button onClick={() => navigate('/admin/list')} className="px-4 py-2 border rounded">Manage Articles</button>
+          </div>
+          <button onClick={() => navigate(-1)} className="px-4 py-2 border rounded">Cancel</button>
+        </div>
+      </div>
+    </section>
+  )
+}
