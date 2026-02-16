@@ -13,7 +13,7 @@ function App() {
     <BrowserRouter>
       <div className="app-root min-h-screen bg-white dark:bg-slate-900">
         <Navbar />
-        <main>
+        <main className="bg-white">
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/article/:id" element={<NewsPage />} />
