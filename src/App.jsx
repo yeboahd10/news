@@ -11,7 +11,7 @@ import AdminList from './Components/AdminList'
 function App() {
   return (
     <BrowserRouter>
-      <div className="app-root min-h-screen bg-white dark:bg-slate-900">
+      <div className="app-root min-h-screen bg-white ">
         <Navbar />
         <main className="bg-white">
           <Routes>
