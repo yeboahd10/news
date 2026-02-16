@@ -2,16 +2,19 @@ import React, { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { db } from '../firebase'
 import { collection, query, where, orderBy, getDocs } from 'firebase/firestore'
+import Skeleton from './Skeleton'
 
 export default function CategoryPage() {
   const { category } = useParams()
   const navigate = useNavigate()
   const [items, setItems] = useState([])
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     if (!category) return
     const key = decodeURIComponent(category)
     ;(async () => {
+      setLoading(true)
       try {
         // fetch matching category documents (avoid requiring composite index)
         const q = query(collection(db, 'news'), where('category', '==', key))
@@ -32,6 +35,8 @@ export default function CategoryPage() {
       } catch (err) {
         console.error('Error loading category items:', err)
         setItems([])
+      } finally {
+        setLoading(false)
       }
     })()
   }, [category])
@@ -43,21 +48,29 @@ export default function CategoryPage() {
   return (
     <section className="max-w-4xl mx-auto px-4 py-8">
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold">{key}</h1>
-        <button onClick={() => navigate(-1)} className="text-sm px-3 py-1 bg-slate-200 rounded-md">Back</button>
+        <h1 className="text-2xl font-bold text-black">{key}</h1>
+        <button onClick={() => navigate(-1)} className="text-sm px-3 py-1 bg-slate-200 rounded-md text-black">Back</button>
       </div>
 
       <div className="space-y-4">
-        {items.length === 0 && <div className="text-slate-500">No articles found for {key}.</div>}
-        {items.map(item => (
-          <article key={item.id} onClick={() => navigate(`/article/${item.id}`)} className="cursor-pointer bg-white rounded-md shadow-sm p-4 flex gap-4 hover:shadow-md">
-            <img src={item.image} alt="" className="w-36 h-24 object-cover rounded" />
-            <div>
-              <h2 className="text-lg font-semibold">{item.title}</h2>
-              <p className="text-sm text-slate-500 mt-1">{item.details && item.details.slice(0, 140)}</p>
+        {loading ? (
+          Array.from({ length: 3 }).map((_, i) => (
+            <div key={i} className="bg-white rounded-md shadow-sm p-4">
+              <Skeleton variant="card" />
             </div>
-          </article>
-        ))}
+          ))
+        ) : items.length === 0 ? (
+          <div className="text-black">No articles in this category.</div>
+        ) : (
+          items.map(item => (
+            <article key={item.id} onClick={() => navigate(`/article/${item.id}`)} className="cursor-pointer bg-white rounded-md shadow-sm p-4 flex gap-4 hover:shadow-md">
+              <img src={item.image} alt="" className="w-36 h-24 object-cover rounded" />
+              <div>
+                <h2 className="text-sm font-semibold text-black">{item.title}</h2>
+              </div>
+            </article>
+          ))
+        )}
       </div>
     </section>
   )

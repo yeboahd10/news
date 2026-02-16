@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { db } from '../firebase'
 import { collection, getDocs, query, orderBy, deleteDoc, doc } from 'firebase/firestore'
+import Skeleton from './Skeleton'
 
 export default function AdminList() {
   const navigate = useNavigate()
@@ -47,11 +48,19 @@ export default function AdminList() {
         </div>
       </div>
 
-      {loading && <div className="text-slate-500">Loading...</div>}
+      {loading && (
+        <div className="space-y-3">
+          {Array.from({ length: 3 }).map((_, i) => (
+            <div key={i} className="bg-white rounded-md shadow-sm p-4">
+              <Skeleton variant="list" />
+            </div>
+          ))}
+        </div>
+      )}
 
       <div className="space-y-3">
         {!loading && items.length === 0 && <div className="text-slate-500">No articles published yet.</div>}
-        {items.map(item => (
+        {!loading && items.map(item => (
           <article key={item.id} className="bg-white rounded-md shadow-sm p-4 hover:shadow-md">
             <div className="flex gap-4 items-start">
               <img src={item.image} alt="" className="w-36 h-24 object-cover rounded cursor-pointer flex-shrink-0" onClick={() => navigate(`/admin/edit/${item.id}`)} />

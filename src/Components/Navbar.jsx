@@ -15,9 +15,9 @@ export default function Navbar() {
 				<div className="flex items-center gap-3">
 					<nav className="hidden md:flex gap-4 items-center">
 						<Link className="text-slate-100 hover:text-white/90" to="/">Home</Link>
-						<Link className="text-slate-100 hover:text-white/90" to="/">Politics</Link>
-						<Link className="text-slate-100 hover:text-white/90" to="/">Entertainment</Link>
-						<Link className="text-slate-100 hover:text-white/90" to="/">Sports</Link>
+						<Link className="text-slate-100 hover:text-white/90" to="/category/Politics">Politics</Link>
+						<Link className="text-slate-100 hover:text-white/90" to="/category/Entertainment">Entertainment</Link>
+						<Link className="text-slate-100 hover:text-white/90" to="/category/Sports">Sports</Link>
 						<Link to="/admin" className="border border-white text-white px-4 py-2 rounded hover:bg-white hover:text-slate-900 transition">
 							Become an Editor
 						</Link>
@@ -60,11 +60,11 @@ export default function Navbar() {
 
 					<Link className="pt-2 text-lg text-slate-100 hover:text-white" to="/" onClick={() => setOpen(false)}>Home</Link>
                     <hr className="border-t border-slate-700 my-2" />
-					<Link className="text-lg text-slate-100 hover:text-white" to="/" onClick={() => setOpen(false)}>Politics</Link>
+					<Link className="text-lg text-slate-100 hover:text-white" to="/category/Politics" onClick={() => setOpen(false)}>Politics</Link>
                     <hr className="border-t border-slate-700 my-2" />
-					<Link className="text-lg text-slate-100 hover:text-white" to="/" onClick={() => setOpen(false)}>Entertainment</Link>
+					<Link className="text-lg text-slate-100 hover:text-white" to="/category/Entertainment" onClick={() => setOpen(false)}>Entertainment</Link>
                     <hr className="border-t border-slate-700 my-2" />
-					<Link className="text-lg text-slate-100 hover:text-white" to="/" onClick={() => setOpen(false)}>Sports</Link>
+					<Link className="text-lg text-slate-100 hover:text-white" to="/category/Sports" onClick={() => setOpen(false)}>Sports</Link>
                     <hr className="border-t border-slate-700 my-2" />
 					<Link to="/admin" className="border border-white text-white px-4 py-2 rounded hover:bg-white hover:text-slate-900 transition" onClick={() => setOpen(false)}>Become an Editor</Link>
 				</div>

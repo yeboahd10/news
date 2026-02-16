@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { db } from '../firebase'
 import { doc, getDoc } from 'firebase/firestore'
+import Skeleton from './Skeleton'
 
 export default function NewsPage() {
   const { id } = useParams()
@@ -9,9 +10,11 @@ export default function NewsPage() {
   const [item, setItem] = useState(null)
   const [copied, setCopied] = useState(false)
   const [visible, setVisible] = useState(false)
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     ;(async () => {
+      setLoading(true)
       try {
         const ref = doc(db, 'news', id)
         const snap = await getDoc(ref)
@@ -25,12 +28,25 @@ export default function NewsPage() {
         setItem(null)
       } finally {
         setVisible(true)
+        setLoading(false)
       }
     })()
   }, [id])
 
+  if (loading) return (
+    <div className="max-w-4xl mx-auto px-4 py-8 space-y-4">
+      <div className="h-6 w-3/4 rounded skeleton" />
+      <div className="w-full h-64 rounded skeleton" />
+      <div className="space-y-2">
+        <div className="h-4 w-full rounded skeleton" />
+        <div className="h-4 w-5/6 rounded skeleton" />
+        <div className="h-4 w-2/3 rounded skeleton" />
+      </div>
+    </div>
+  )
+
   if (!item) return (
-    <div className="max-w-4xl mx-auto px-4 py-8">Loading....</div>
+    <div className="max-w-4xl mx-auto px-4 py-8">Article not found.</div>
   )
 
   const url = typeof window !== 'undefined' ? window.location.href : ''
