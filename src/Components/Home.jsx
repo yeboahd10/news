@@ -3,15 +3,12 @@ import { useNavigate } from 'react-router-dom'
 import { CATEGORIES } from '../data/news'
 import { db } from '../firebase'
 import { collection, getDocs, query, orderBy } from 'firebase/firestore'
-import Skeleton from './Skeleton'
 
 export default function Home() {
   const navigate = useNavigate()
   const [news, setNews] = useState([])
-  const [loading, setLoading] = useState(true)
   useEffect(() => {
     ;(async () => {
-      setLoading(true)
       try {
         const q = query(collection(db, 'news'), orderBy('createdAt', 'desc'))
         const snap = await getDocs(q)
@@ -19,8 +16,6 @@ export default function Home() {
         setNews(items)
       } catch (err) {
         console.error('Error fetching news:', err)
-      } finally {
-        setLoading(false)
       }
     })()
   }, [])
@@ -39,22 +34,15 @@ export default function Home() {
             <h2 className="w-full text-xl font-semibold bg-black text-white p-2 rounded-md">{cat}</h2>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
-              {loading ? (
-                Array.from({ length: 2 }).map((_, i) => (
-                  <div key={i} className="p-2">
-                    <Skeleton variant="card" />
-                  </div>
-                ))
-              ) : (
-                shown.map(item => {
+              {shown.map(item => {
                 const toDate = (ts) => {
                   if (!ts) return new Date(0)
                   if (ts.toDate) return ts.toDate()
                   if (ts.seconds) return new Date(ts.seconds * 1000)
                   if (typeof ts === 'number') return new Date(ts)
                   return new Date(ts)
-                })
-              )}
+                }
+
                 const createdDate = toDate(item.createdAt)
                 const diffSec = Math.floor((Date.now() - createdDate.getTime()) / 1000)
                 let timeLabel
