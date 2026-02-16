@@ -78,8 +78,8 @@ export default function NewsPage() {
       <h1 className="text-2xl font-bold mb-4 text-black ">{item.title}</h1>
       <img src={item.image} alt={item.title} className="w-full h-auto rounded-md mb-6 object-cover" />
 
-      <div className="prose max-w-none text-black  dark:text-slate-200 mb-6">
-        <p>{item.details}</p>
+      <div className="prose max-w-none text-black text-black mb-6 whitespace-pre-wrap">
+        {item.details}
       </div>
 
       <div className="flex items-center gap-3">
