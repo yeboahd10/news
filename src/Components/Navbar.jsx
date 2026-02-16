@@ -18,6 +18,9 @@ export default function Navbar() {
 						<Link className="text-slate-100 hover:text-white/90" to="/">Politics</Link>
 						<Link className="text-slate-100 hover:text-white/90" to="/">Entertainment</Link>
 						<Link className="text-slate-100 hover:text-white/90" to="/">Sports</Link>
+						<Link to="/admin" className="border border-white text-white px-4 py-2 rounded hover:bg-white hover:text-slate-900 transition">
+							Become an Editor
+						</Link>
 					</nav>
 
 					<button
@@ -62,6 +65,8 @@ export default function Navbar() {
 					<Link className="text-lg text-slate-100 hover:text-white" to="/" onClick={() => setOpen(false)}>Entertainment</Link>
                     <hr className="border-t border-slate-700 my-2" />
 					<Link className="text-lg text-slate-100 hover:text-white" to="/" onClick={() => setOpen(false)}>Sports</Link>
+                    <hr className="border-t border-slate-700 my-2" />
+					<Link to="/admin" className="border border-white text-white px-4 py-2 rounded hover:bg-white hover:text-slate-900 transition" onClick={() => setOpen(false)}>Become an Editor</Link>
 				</div>
 			</div>
 		</header>
