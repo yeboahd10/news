@@ -41,10 +41,10 @@ export default function AdminList() {
   return (
     <section className="max-w-4xl mx-auto px-4 py-8">
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold">Manage Articles</h1>
+        <h1 className="text-2xl font-bold text-black">Manage Articles</h1>
         <div className="flex gap-2">
           <button onClick={() => navigate('/admin')} className="px-3 py-1 bg-indigo-800 text-white rounded">New Article</button>
-          <button onClick={() => window.location.reload()} className="px-3 py-1 border rounded">Refresh</button>
+          <button onClick={() => window.location.reload()} className="px-3 py-1 border border-black rounded text-black">Refresh</button>
         </div>
       </div>
 
@@ -59,17 +59,17 @@ export default function AdminList() {
       )}
 
       <div className="space-y-3">
-        {!loading && items.length === 0 && <div className="text-slate-500">No articles published yet.</div>}
+        {!loading && items.length === 0 && <div className="text-black">No articles published yet.</div>}
         {!loading && items.map(item => (
           <article key={item.id} className="bg-white rounded-md shadow-sm p-4 hover:shadow-md">
             <div className="flex gap-4 items-start">
               <img src={item.image} alt="" className="w-36 h-24 object-cover rounded cursor-pointer flex-shrink-0" onClick={() => navigate(`/admin/edit/${item.id}`)} />
               <div className="flex-1 cursor-pointer" onClick={() => navigate(`/admin/edit/${item.id}`)}>
                 <div className="flex justify-between items-start gap-2 mb-2">
-                  <h2 className="text-lg font-semibold flex-1">{item.title}</h2>
+                  <h2 className="text-sm text-black font-semibold flex-1">{item.title}</h2>
                 
                 </div>
-                <div className="text-sm text-slate-500 mt-1">{item.category} — {item.createdAt && item.createdAt.toDate ? item.createdAt.toDate().toLocaleString() : ''}</div>
+                <div className="text-sm text-black mt-1">{item.category} — {item.createdAt && item.createdAt.toDate ? item.createdAt.toDate().toLocaleString() : ''}</div>
               </div>
             </div>
               <button onClick={(e) => handleDeleteArticle(e, item.id)} className="px-2 mt-2 p-2 bg-red-600 text-white rounded text-sm hover:bg-red-700 flex-shrink-0 whitespace-nowrap">Delete</button>

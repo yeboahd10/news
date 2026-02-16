@@ -105,16 +105,16 @@ export default function AdminEditor() {
   }
 
   return (
-    <section className="max-w-3xl mx-auto px-4 py-8">
-      <h1 className="text-2xl font-bold mb-4">Admin Editor</h1>
-      {loading && <div className="text-sm text-slate-500 mb-2">Loading article...</div>}
+    <section className="max-w-3xl mx-auto px-4 py-8 text-black">
+      <h1 className="text-2xl font-bold mb-4 text-black">Admin Editor</h1>
+      {loading && <div className="text-sm text-black mb-2">Loading article...</div>}
 
       <div className="space-y-4">
         <div>
-          <label className="block text-sm font-medium mb-1">Categories</label>
+          <label className="block text-sm font-medium mb-1 text-black">Categories</label>
           <div className="flex flex-wrap gap-3">
             {CATEGORIES.map(cat => (
-              <label key={cat} className="flex items-center gap-2 text-sm">
+              <label key={cat} className="flex items-center gap-2 text-sm text-black">
                 <input type="checkbox" checked={selected.includes(cat)} onChange={() => toggleCategory(cat)} />
                 <span>{cat}</span>
               </label>
@@ -123,26 +123,26 @@ export default function AdminEditor() {
         </div>
 
         <div>
-          <label className="block text-sm font-medium mb-1">Title</label>
-          <input value={title} onChange={e => setTitle(e.target.value)} className="w-full border rounded px-3 py-2" placeholder="Article title" />
+          <label className="block text-sm font-medium mb-1 text-black">Title</label>
+          <input value={title} onChange={e => setTitle(e.target.value)} className="w-full border rounded px-3 py-2 text-black"  placeholder="Article title" />
         </div>
 
         <div>
-          <label className="block text-sm font-medium mb-1">Image URL</label>
-          <input value={image} onChange={e => setImage(e.target.value)} className="w-full border rounded px-3 py-2" placeholder="https://... or leave blank for placeholder" />
+          <label className="block text-sm font-medium mb-1 text-black">Image URL</label>
+          <input value={image} onChange={e => setImage(e.target.value)} className="w-full border rounded px-3 py-2 text-black" placeholder="https://... or leave blank for placeholder" />
         </div>
 
         <div>
-          <label className="block text-sm font-medium mb-1">Text</label>
-          <textarea value={text} onChange={e => setText(e.target.value)} className="w-full border rounded px-3 py-2 min-h-[140px]" placeholder="Write the article body or excerpt here..."></textarea>
+          <label className="block text-sm font-medium mb-1 text-black">Text</label>
+          <textarea value={text} onChange={e => setText(e.target.value)} className="w-full border rounded px-3 py-2 min-h-[140px] text-black" placeholder="Write the article body or excerpt here..."></textarea>
         </div>
 
         <div className="flex items-center gap-3">
           <div className="flex flex-col gap-4">
             <button onClick={publish} disabled={saving} className="bg-indigo-800 text-white px-4 py-2 rounded hover:bg-indigo-700">{saving ? 'Saving...' : 'Publish'}</button>
-            <button onClick={() => navigate('/admin/list')} className="px-4 py-2 border rounded">Manage Articles</button>
+            <button onClick={() => navigate('/admin/list')} className="px-4 py-2 border border-black rounded text-black">Manage Articles</button>
           </div>
-          <button onClick={() => navigate(-1)} className="px-4 py-2 border rounded">Cancel</button>
+          <button onClick={() => navigate(-1)} className="px-4 py-2 border border-black rounded text-black">Cancel</button>
         </div>
       </div>
     </section>
