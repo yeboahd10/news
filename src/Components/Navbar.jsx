@@ -17,6 +17,8 @@ export default function Navbar() {
 			setShowLoginModal(false)
 			setUsername('')
 			setPassword('')
+			// mark admin in localStorage so other components can allow moderation
+			try { localStorage.setItem('isAdmin', 'true') } catch (e) {}
 			navigate('/admin')
 		} else {
 			setLoginError('Invalid username or password')
@@ -109,7 +111,7 @@ export default function Navbar() {
 					
 					<div className="space-y-4">
 						<div>
-							<label className="block text-sm font-medium text-slate-700 mb-1">
+							<label className="block text-sm font-medium text-black mb-1">
 								Username
 							</label>
 							<input

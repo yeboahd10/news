@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { db } from '../firebase'
-import { doc, getDoc } from 'firebase/firestore'
+import { doc, getDoc, collection, addDoc, serverTimestamp, query, orderBy, onSnapshot, updateDoc, deleteDoc, arrayUnion, arrayRemove } from 'firebase/firestore'
 import Skeleton from './Skeleton'
 
 export default function NewsPage() {
@@ -11,6 +11,13 @@ export default function NewsPage() {
   const [copied, setCopied] = useState(false)
   const [visible, setVisible] = useState(false)
   const [loading, setLoading] = useState(true)
+  const [comments, setComments] = useState([])
+  const [commentText, setCommentText] = useState('')
+  const [commenterName, setCommenterName] = useState('')
+  const [posting, setPosting] = useState(false)
+  const [visitorId, setVisitorId] = useState('')
+  const [replyingId, setReplyingId] = useState(null)
+  const [replyText, setReplyText] = useState('')
 
   useEffect(() => {
     ;(async () => {
@@ -32,6 +39,34 @@ export default function NewsPage() {
       }
     })()
   }, [id])
+
+  // subscribe to comments for this article (real-time)
+  useEffect(() => {
+    if (!id) return
+    const q = query(collection(db, 'news', id, 'comments'), orderBy('createdAt', 'desc'))
+    const unsub = onSnapshot(q, snap => {
+      const list = snap.docs.map(d => ({ id: d.id, ...d.data() }))
+      setComments(list)
+    }, err => {
+      console.error('Comments listener error:', err)
+    })
+
+    return () => unsub()
+  }, [id])
+
+  // ensure a visitor id for like tracking and reporter id
+  useEffect(() => {
+    try {
+      let vid = localStorage.getItem('visitorId')
+      if (!vid) {
+        vid = Math.random().toString(36).slice(2, 10)
+        localStorage.setItem('visitorId', vid)
+      }
+      setVisitorId(vid)
+    } catch (e) {
+      setVisitorId('guest')
+    }
+  }, [])
 
   if (loading) return (
     <div className="max-w-4xl mx-auto px-4 py-8 space-y-4">
@@ -72,6 +107,98 @@ export default function NewsPage() {
     }
   }
 
+  function formatTime(ts) {
+    if (!ts) return ''
+    // return relative time like Facebook (e.g., "5m", "2h")
+    const date = ts && ts.toDate ? ts.toDate() : (ts && ts.seconds ? new Date(ts.seconds * 1000) : new Date(ts))
+    const diff = Math.floor((Date.now() - date.getTime()) / 1000)
+    if (diff < 60) return `${diff}s`
+    if (diff < 3600) return `${Math.floor(diff/60)}m`
+    if (diff < 86400) return `${Math.floor(diff/3600)}h`
+    if (diff < 2592000) return `${Math.floor(diff/86400)}d`
+    return date.toLocaleDateString()
+  }
+
+  async function postComment() {
+    if (!commentText.trim()) return alert('Please write a comment')
+    setPosting(true)
+    try {
+      await addDoc(collection(db, 'news', id, 'comments'), {
+        name: commenterName.trim() || 'Anonymous',
+        text: commentText.trim(),
+        createdAt: serverTimestamp()
+      })
+      setCommentText('')
+      setCommenterName('')
+    } catch (err) {
+      console.error('Failed to post comment:', err)
+      alert('Failed to post comment')
+    } finally {
+      setPosting(false)
+    }
+  }
+
+  async function postReply(parentId) {
+    if (!replyText.trim()) return alert('Please write a reply')
+    setPosting(true)
+    try {
+      await addDoc(collection(db, 'news', id, 'comments'), {
+        name: commenterName.trim() || 'Anonymous',
+        text: replyText.trim(),
+        parentId,
+        createdAt: serverTimestamp()
+      })
+      setReplyText('')
+      setReplyingId(null)
+    } catch (err) {
+      console.error('Failed to post reply:', err)
+      alert('Failed to post reply')
+    } finally {
+      setPosting(false)
+    }
+  }
+
+  async function toggleLike(c) {
+    if (!c || !c.id) return
+    const ref = doc(db, 'news', id, 'comments', c.id)
+    try {
+      const liked = Array.isArray(c.likedBy) && c.likedBy.includes(visitorId)
+      if (liked) {
+        await updateDoc(ref, { likedBy: arrayRemove(visitorId) })
+      } else {
+        await updateDoc(ref, { likedBy: arrayUnion(visitorId) })
+      }
+    } catch (err) {
+      console.error('Failed to toggle like:', err)
+    }
+  }
+
+  async function deleteComment(commentId) {
+    if (!commentId) return
+    if (!confirm('Delete this comment?')) return
+    try {
+      await deleteDoc(doc(db, 'news', id, 'comments', commentId))
+    } catch (err) {
+      console.error('Failed to delete comment:', err)
+      alert('Failed to delete comment')
+    }
+  }
+
+  async function reportComment(commentId) {
+    if (!commentId) return
+    try {
+      await addDoc(collection(db, 'news', id, 'reports'), {
+        commentId,
+        reporter: commenterName.trim() || visitorId || 'anonymous',
+        createdAt: serverTimestamp()
+      })
+      alert('Reported — thank you')
+    } catch (err) {
+      console.error('Failed to report comment:', err)
+      alert('Failed to report comment')
+    }
+  }
+
   return (
     <article className={`max-w-4xl mx-auto px-4 py-8 transition-opacity duration-300 ${visible ? 'opacity-100' : 'opacity-0'}`}>
       <button onClick={() => navigate(-1)} className="mb-4 text-sm text-slate-700 hover:underline">← Back</button>
@@ -86,6 +213,104 @@ export default function NewsPage() {
       <div className="prose max-w-none text-black text-black mb-6 whitespace-pre-wrap">
         {item.details}
       </div>
+
+      {/* Comments section - Facebook-like */}
+      <section className="mt-8">
+        <h3 className="text-lg font-semibold mb-3  ">Comments ({comments.length})</h3>
+
+        {/* Input row: avatar + input */}
+        <div className="flex items-start gap-3 mb-4">
+          <div className="w-10 h-10 rounded-full bg-slate-300 flex items-center justify-center text-sm font-semibold text-white">{(commenterName || 'You').slice(0,1).toUpperCase()}</div>
+          <div className="flex-1">
+            <textarea value={commentText} onChange={e => setCommentText(e.target.value)} placeholder="Write a public comment..." className="w-full px-3 py-2 border rounded resize-none min-h-[44px]" />
+            <div className="flex items-center justify-between mt-2">
+              <div className="flex items-center gap-2 text-sm text-slate-600">
+                <input value={commenterName} onChange={e => setCommenterName(e.target.value)} placeholder="Your name (optional)" className="px-2 py-1 border rounded text-sm" />
+              </div>
+              <div className="flex gap-2">
+                <button onClick={postComment} disabled={posting} className="px-3 py-1 bg-blue-600 text-white rounded text-sm">{posting ? 'Posting...' : 'Comment'}</button>
+                <button onClick={() => { setCommentText(''); setCommenterName('') }} className="px-3 py-1 border rounded text-sm">Cancel</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Comments list with threading and actions */}
+        <div className="space-y-3">
+          {comments.length === 0 ? (
+            <div className="text-sm text-black">No comments yet — be the first to comment.</div>
+          ) : (
+            // render top-level comments (no parentId)
+            comments.filter(c => !c.parentId).map(c => {
+              const replies = comments.filter(r => r.parentId === c.id).sort((a,b)=> (a.createdAt?.seconds||0)-(b.createdAt?.seconds||0))
+              const likedBy = Array.isArray(c.likedBy) ? c.likedBy : []
+              const liked = likedBy.includes(visitorId)
+              return (
+                <div key={c.id} className="">
+                  <div className="flex gap-3">
+                    <div className="w-10 h-10 rounded-full bg-slate-300 flex items-center justify-center text-sm font-semibold text-white">{(c.name || 'A').slice(0,1).toUpperCase()}</div>
+                    <div className="flex-1 bg-white/80 p-3 rounded">
+                      <div className="flex items-center gap-3">
+                        <strong className="text-sm">{c.name || 'Anonymous'}</strong>
+                        <span className="text-xs text-slate-500">· {formatTime(c.createdAt)}</span>
+                      </div>
+                      <div className="mt-1 text-sm text-slate-800">{c.text}</div>
+                      <div className="flex items-center gap-4 mt-2 text-sm text-slate-600">
+                        <button onClick={() => toggleLike(c)} className={`hover:underline ${liked ? 'text-blue-600' : ''}`}>Like{likedBy.length ? ` · ${likedBy.length}` : ''}</button>
+                        <button onClick={() => setReplyingId(replyingId === c.id ? null : c.id)} className="hover:underline">Reply</button>
+                        { (function(){ try { return localStorage.getItem('isAdmin') === 'true' } catch(e){ return false } })() && (
+                          <button onClick={() => deleteComment(c.id)} className="hover:underline text-red-600">Delete</button>
+                        )}
+                        <button onClick={() => reportComment(c.id)} className="hover:underline text-amber-600">Report</button>
+                      </div>
+
+                      {/* Reply input for this comment */}
+                      {replyingId === c.id && (
+                        <div className="mt-3">
+                          <textarea value={replyText} onChange={e=>setReplyText(e.target.value)} placeholder="Write a reply..." className="w-full px-3 py-2 border rounded min-h-[60px]" />
+                          <div className="flex gap-2 mt-2">
+                            <button onClick={() => postReply(c.id)} disabled={posting} className="px-3 py-1 bg-blue-600 text-white rounded text-sm">Reply</button>
+                            <button onClick={() => { setReplyText(''); setReplyingId(null) }} className="px-3 py-1 border rounded text-sm">Cancel</button>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Replies */}
+                      {replies.length > 0 && (
+                        <div className="mt-3 space-y-2">
+                          {replies.map(r => {
+                            const rLikedBy = Array.isArray(r.likedBy) ? r.likedBy : []
+                            const rLiked = rLikedBy.includes(visitorId)
+                            return (
+                              <div key={r.id} className="flex gap-3 ml-12">
+                                <div className="w-8 h-8 rounded-full bg-slate-300 flex items-center justify-center text-xs font-semibold text-white">{(r.name || 'A').slice(0,1).toUpperCase()}</div>
+                                <div className="flex-1 bg-white/80 p-2 rounded">
+                                  <div className="flex items-center gap-2">
+                                    <strong className="text-sm">{r.name || 'Anonymous'}</strong>
+                                    <span className="text-xs text-slate-500">· {formatTime(r.createdAt)}</span>
+                                  </div>
+                                  <div className="text-sm text-slate-800">{r.text}</div>
+                                  <div className="flex items-center gap-3 mt-1 text-sm text-slate-600">
+                                    <button onClick={() => toggleLike(r)} className={`hover:underline ${rLiked ? 'text-blue-600' : ''}`}>Like{rLikedBy.length ? ` · ${rLikedBy.length}` : ''}</button>
+                                    { (function(){ try { return localStorage.getItem('isAdmin') === 'true' } catch(e){ return false } })() && (
+                                      <button onClick={() => deleteComment(r.id)} className="hover:underline text-red-600">Delete</button>
+                                    )}
+                                    <button onClick={() => reportComment(r.id)} className="hover:underline text-amber-600">Report</button>
+                                  </div>
+                                </div>
+                              </div>
+                            )
+                          })}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              )
+            })
+          )}
+        </div>
+      </section>
 
       <div className="flex items-center gap-3">
         <button onClick={shareFacebook} title="Share on Facebook" aria-label="Share on Facebook" className="p-2 rounded-md bg-blue-600 text-white hover:bg-blue-700">
