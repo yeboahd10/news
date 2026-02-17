@@ -10,6 +10,8 @@ export default function AdminEditor() {
   const [title, setTitle] = useState('')
   const [image, setImage] = useState('')
   const [text, setText] = useState('')
+  const [source, setSource] = useState('')
+  const [editorName, setEditorName] = useState('')
   const [selected, setSelected] = useState([])
   const [saving, setSaving] = useState(false)
   const [loading, setLoading] = useState(false)
@@ -26,6 +28,8 @@ export default function AdminEditor() {
           setTitle(data.title || '')
           setImage(data.image || '')
           setText(data.details || '')
+          setSource(data.source || '')
+          setEditorName(data.editorName || '')
           setSelected(data.category ? [data.category] : [])
         } else {
           alert('Article not found')
@@ -65,6 +69,8 @@ export default function AdminEditor() {
             title: title.trim(),
             image: image || `https://picsum.photos/seed/${Math.floor(Math.random()*1000)}/1200/600`,
             details: text || 'No additional details provided.',
+            source: source.trim(),
+            editorName: editorName.trim(),
             updatedAt: serverTimestamp()
           })
           // if additional categories selected, create new docs for them
@@ -74,6 +80,8 @@ export default function AdminEditor() {
             title: title.trim(),
             image: image || `https://picsum.photos/seed/${Math.floor(Math.random()*1000)}/1200/600`,
             details: text || 'No additional details provided.',
+            source: source.trim(),
+            editorName: editorName.trim(),
             createdAt: serverTimestamp()
           }))
           if (extraTasks.length) await Promise.all(extraTasks)
@@ -83,6 +91,8 @@ export default function AdminEditor() {
             title: title.trim(),
             image: image || `https://picsum.photos/seed/${Math.floor(Math.random()*1000)}/1200/600`,
             details: text || 'No additional details provided.',
+            source: source.trim(),
+            editorName: editorName.trim(),
             createdAt: serverTimestamp()
           }))
           await Promise.all(tasks)
@@ -92,6 +102,8 @@ export default function AdminEditor() {
         setTitle('')
         setImage('')
         setText('')
+        setSource('')
+        setEditorName('')
         setSelected([])
         navigate('/admin/list')
       } catch (err) {
@@ -130,6 +142,16 @@ export default function AdminEditor() {
         <div>
           <label className="block text-sm font-medium mb-1 text-black">Image URL</label>
           <input value={image} onChange={e => setImage(e.target.value)} className="w-full border rounded px-3 py-2 text-black" placeholder="https://... or leave blank for placeholder" />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-1 text-black">Source</label>
+          <input value={source} onChange={e => setSource(e.target.value)} className="w-full border rounded px-3 py-2 text-black" placeholder="e.g., Reuters, Associated Press, etc." />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-1 text-black">Editor's Name</label>
+          <input value={editorName} onChange={e => setEditorName(e.target.value)} className="w-full border rounded px-3 py-2 text-black" placeholder="Enter editor's name" />
         </div>
 
         <div>
