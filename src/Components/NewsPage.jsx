@@ -214,22 +214,39 @@ export default function NewsPage() {
         {item.details}
       </div>
 
+       <div className="flex items-center gap-3">
+        <button onClick={shareFacebook} title="Share on Facebook" aria-label="Share on Facebook" className="p-2 rounded-md bg-blue-600 text-white hover:bg-blue-700">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M22 12.07C22 6.49 17.52 2 12 2S2 6.49 2 12.07C2 17.09 5.66 21.26 10.44 22v-7.03H8.08v-2.9h2.36V9.41c0-2.33 1.39-3.61 3.52-3.61.99 0 2.03.18 2.03.18v2.23h-1.14c-1.13 0-1.48.7-1.48 1.42v1.7h2.52l-.4 2.9h-2.12V22C18.34 21.26 22 17.09 22 12.07z" />
+          </svg>
+        </button>
+
+        <button onClick={shareWhatsApp} title="Share on WhatsApp" aria-label="Share on WhatsApp" className="p-2 rounded-md bg-green-600 text-white hover:bg-green-700">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M20.52 3.48A11.86 11.86 0 0012.01.02C6.26.02 1.48 4.8 1.48 10.55c0 1.86.49 3.68 1.42 5.28L.02 23.98l8.5-2.22c1.56.43 3.18.66 4.99.66 5.74 0 10.52-4.78 10.52-10.53 0-2.82-1.1-5.46-3.01-7.69zM12.01 20.24c-1.45 0-2.86-.39-4.06-1.12l-.29-.17-5.03 1.31 1.37-4.9-.19-.31a7.15 7.15 0 01-1.09-3.77c0-3.93 3.2-7.12 7.14-7.12 1.9 0 3.69.74 5.03 2.08a6.98 6.98 0 012.08 5.03c0 3.94-3.2 7.13-7.14 7.13z"/>
+            <path d="M17.3 14.02c-.27-.13-1.6-.79-1.84-.88-.24-.09-.41-.13-.58.13s-.66.88-.81 1.06c-.15.17-.31.2-.58.07-.27-.13-1.14-.42-2.17-1.34-.8-.72-1.34-1.61-1.5-1.88-.16-.27-.02-.42.12-.55.12-.12.27-.31.4-.47.13-.16.17-.27.27-.45.09-.18.05-.34-.02-.47-.07-.13-.58-1.4-.8-1.92-.21-.51-.43-.44-.58-.45-.15-.01-.33-.01-.5-.01s-.47.07-.72.33c-.25.26-.97.95-.97 2.32 0 1.36.99 2.68 1.13 2.87.14.19 1.95 3 4.73 4.2 3.16 1.36 3.16.91 3.73.85.57-.06 1.84-.75 2.1-1.47.26-.72.26-1.34.18-1.47-.08-.14-.27-.21-.55-.34z"/>
+          </svg>
+        </button>
+
+        <button onClick={copyLink} className="px-3 py-1 bg-slate-200 text-slate-800 rounded-md">{copied ? 'Copied!' : 'Copy link'}</button>
+      </div>
+
       {/* Comments section - Facebook-like */}
       <section className="mt-8">
-        <h3 className="text-lg font-semibold mb-3  ">Comments ({comments.length})</h3>
+        <h3 className="text-lg font-semibold mb-3 text-black  ">Comments ({comments.length})</h3>
 
         {/* Input row: avatar + input */}
         <div className="flex items-start gap-3 mb-4">
-          <div className="w-10 h-10 rounded-full bg-slate-300 flex items-center justify-center text-sm font-semibold text-white">{(commenterName || 'You').slice(0,1).toUpperCase()}</div>
+          <div className="w-10 h-10 rounded p-4 bg-slate-300 flex items-center justify-center text-lg font-semibold text-black ">{(commenterName || 'You').slice(0,1).toUpperCase()}</div>
           <div className="flex-1">
-            <textarea value={commentText} onChange={e => setCommentText(e.target.value)} placeholder="Write a public comment..." className="w-full px-3 py-2 border rounded resize-none min-h-[44px]" />
+            <textarea value={commentText} onChange={e => setCommentText(e.target.value)} placeholder="Write a public comment..." className="w-full text-black px-3 py-3 border rounded resize-none min-h-[80px] md:min-h-[100px]" />
             <div className="flex items-center justify-between mt-2">
-              <div className="flex items-center gap-2 text-sm text-slate-600">
-                <input value={commenterName} onChange={e => setCommenterName(e.target.value)} placeholder="Your name (optional)" className="px-2 py-1 border rounded text-sm" />
+              <div className="flex items-center gap-2 text-sm text-black ">
+                <input value={commenterName} onChange={e => setCommenterName(e.target.value)} placeholder="Your name (optional)" className="w-48 md:w-56 px-2 py-1 border text-black rounded text-sm" />
               </div>
               <div className="flex gap-2">
-                <button onClick={postComment} disabled={posting} className="px-3 py-1 bg-blue-600 text-white rounded text-sm">{posting ? 'Posting...' : 'Comment'}</button>
-                <button onClick={() => { setCommentText(''); setCommenterName('') }} className="px-3 py-1 border rounded text-sm">Cancel</button>
+                <button onClick={postComment} disabled={posting} className="px-4 py-1 bg-blue-600 text-white rounded text-sm">{posting ? 'Posting...' : 'Comment'}</button>
+                
               </div>
             </div>
           </div>
@@ -248,14 +265,14 @@ export default function NewsPage() {
               return (
                 <div key={c.id} className="">
                   <div className="flex gap-3">
-                    <div className="w-10 h-10 rounded-full bg-slate-300 flex items-center justify-center text-sm font-semibold text-white">{(c.name || 'A').slice(0,1).toUpperCase()}</div>
+                    <div className="w-10 h-10 rounded-full bg-slate-300 flex items-center justify-center text-sm font-semibold text-black">{(c.name || 'A').slice(0,1).toUpperCase()}</div>
                     <div className="flex-1 bg-white/80 p-3 rounded">
                       <div className="flex items-center gap-3">
                         <strong className="text-sm">{c.name || 'Anonymous'}</strong>
-                        <span className="text-xs text-slate-500">· {formatTime(c.createdAt)}</span>
+                        <span className="text-xs text-black">· {formatTime(c.createdAt)}</span>
                       </div>
-                      <div className="mt-1 text-sm text-slate-800">{c.text}</div>
-                      <div className="flex items-center gap-4 mt-2 text-sm text-slate-600">
+                      <div className="mt-1 text-sm text-black">{c.text}</div>
+                      <div className="flex items-center gap-4 mt-2 text-sm text-black">
                         <button onClick={() => toggleLike(c)} className={`hover:underline ${liked ? 'text-blue-600' : ''}`}>Like{likedBy.length ? ` · ${likedBy.length}` : ''}</button>
                         <button onClick={() => setReplyingId(replyingId === c.id ? null : c.id)} className="hover:underline">Reply</button>
                         { (function(){ try { return localStorage.getItem('isAdmin') === 'true' } catch(e){ return false } })() && (
@@ -266,8 +283,8 @@ export default function NewsPage() {
 
                       {/* Reply input for this comment */}
                       {replyingId === c.id && (
-                        <div className="mt-3">
-                          <textarea value={replyText} onChange={e=>setReplyText(e.target.value)} placeholder="Write a reply..." className="w-full px-3 py-2 border rounded min-h-[60px]" />
+                      <div className="mt-3">
+                          <textarea value={replyText} onChange={e=>setReplyText(e.target.value)} placeholder="Write a reply..." className="w-full px-3 py-2 border rounded min-h-[80px]" />
                           <div className="flex gap-2 mt-2">
                             <button onClick={() => postReply(c.id)} disabled={posting} className="px-3 py-1 bg-blue-600 text-white rounded text-sm">Reply</button>
                             <button onClick={() => { setReplyText(''); setReplyingId(null) }} className="px-3 py-1 border rounded text-sm">Cancel</button>
@@ -312,22 +329,7 @@ export default function NewsPage() {
         </div>
       </section>
 
-      <div className="flex items-center gap-3">
-        <button onClick={shareFacebook} title="Share on Facebook" aria-label="Share on Facebook" className="p-2 rounded-md bg-blue-600 text-white hover:bg-blue-700">
-          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-            <path d="M22 12.07C22 6.49 17.52 2 12 2S2 6.49 2 12.07C2 17.09 5.66 21.26 10.44 22v-7.03H8.08v-2.9h2.36V9.41c0-2.33 1.39-3.61 3.52-3.61.99 0 2.03.18 2.03.18v2.23h-1.14c-1.13 0-1.48.7-1.48 1.42v1.7h2.52l-.4 2.9h-2.12V22C18.34 21.26 22 17.09 22 12.07z" />
-          </svg>
-        </button>
-
-        <button onClick={shareWhatsApp} title="Share on WhatsApp" aria-label="Share on WhatsApp" className="p-2 rounded-md bg-green-600 text-white hover:bg-green-700">
-          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-            <path d="M20.52 3.48A11.86 11.86 0 0012.01.02C6.26.02 1.48 4.8 1.48 10.55c0 1.86.49 3.68 1.42 5.28L.02 23.98l8.5-2.22c1.56.43 3.18.66 4.99.66 5.74 0 10.52-4.78 10.52-10.53 0-2.82-1.1-5.46-3.01-7.69zM12.01 20.24c-1.45 0-2.86-.39-4.06-1.12l-.29-.17-5.03 1.31 1.37-4.9-.19-.31a7.15 7.15 0 01-1.09-3.77c0-3.93 3.2-7.12 7.14-7.12 1.9 0 3.69.74 5.03 2.08a6.98 6.98 0 012.08 5.03c0 3.94-3.2 7.13-7.14 7.13z"/>
-            <path d="M17.3 14.02c-.27-.13-1.6-.79-1.84-.88-.24-.09-.41-.13-.58.13s-.66.88-.81 1.06c-.15.17-.31.2-.58.07-.27-.13-1.14-.42-2.17-1.34-.8-.72-1.34-1.61-1.5-1.88-.16-.27-.02-.42.12-.55.12-.12.27-.31.4-.47.13-.16.17-.27.27-.45.09-.18.05-.34-.02-.47-.07-.13-.58-1.4-.8-1.92-.21-.51-.43-.44-.58-.45-.15-.01-.33-.01-.5-.01s-.47.07-.72.33c-.25.26-.97.95-.97 2.32 0 1.36.99 2.68 1.13 2.87.14.19 1.95 3 4.73 4.2 3.16 1.36 3.16.91 3.73.85.57-.06 1.84-.75 2.1-1.47.26-.72.26-1.34.18-1.47-.08-.14-.27-.21-.55-.34z"/>
-          </svg>
-        </button>
-
-        <button onClick={copyLink} className="px-3 py-1 bg-slate-200 text-slate-800 rounded-md">{copied ? 'Copied!' : 'Copy link'}</button>
-      </div>
+      
     </article>
   )
 }
