@@ -268,7 +268,7 @@ export default function NewsPage() {
                     <div className="w-10 h-10 rounded-full bg-slate-300 flex items-center justify-center text-sm font-semibold text-black">{(c.name || 'A').slice(0,1).toUpperCase()}</div>
                     <div className="flex-1 bg-white/80 p-3 rounded">
                       <div className="flex items-center gap-3">
-                        <strong className="text-sm">{c.name || 'Anonymous'}</strong>
+                        <strong className="text-sm text-black">{c.name || 'Anonymous'}</strong>
                         <span className="text-xs text-black">· {formatTime(c.createdAt)}</span>
                       </div>
                       <div className="mt-1 text-sm text-black">{c.text}</div>
