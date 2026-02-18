@@ -22,7 +22,7 @@ export function extractIdFromUrl(slug, id) {
 
 // Ensure image URL is absolute (for social media sharing)
 export function getAbsoluteImageUrl(imageUrl) {
-  if (!imageUrl) return 'https://echonewsgh.site/logo.png'
+  if (!imageUrl) return 'https://www.echonewsgh.site/vite.svg'
   
   // If already absolute, return as-is
   if (imageUrl.startsWith('http://') || imageUrl.startsWith('https://')) {
@@ -31,17 +31,17 @@ export function getAbsoluteImageUrl(imageUrl) {
   
   // If relative path, make it absolute with live domain
   if (imageUrl.startsWith('/')) {
-    return 'https://echonewsgh.site' + imageUrl
+    return 'https://www.echonewsgh.site' + imageUrl
   }
   
   // Otherwise add domain
-  return 'https://echonewsgh.site/' + imageUrl
+  return 'https://www.echonewsgh.site/' + imageUrl
 }
 
 // Get current page absolute URL
 export function getAbsolutePageUrl() {
   if (typeof window === 'undefined') {
-    return 'https://echonewsgh.site'
+    return 'https://www.echonewsgh.site'
   }
   
   const url = window.location.href
@@ -49,7 +49,7 @@ export function getAbsolutePageUrl() {
   // If on localhost, replace with live domain
   if (url.includes('localhost')) {
     const path = window.location.pathname
-    return 'https://echonewsgh.site' + path
+    return 'https://www.echonewsgh.site' + path
   }
   
   return url

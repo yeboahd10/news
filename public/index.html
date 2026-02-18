@@ -6,6 +6,23 @@
     <meta name="description" content="EchoNews - The Latest Breaking News & Updates from around the world">
     <meta name="robots" content="index, follow">
     <title>EchoNews - Breaking News & Latest Updates</title>
+    
+    <!-- Open Graph Meta Tags for Social Media Sharing -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://www.echonewsgh.site">
+    <meta property="og:title" content="EchoNews - Breaking News & Latest Updates">
+    <meta property="og:description" content="Stay updated with the latest breaking news and updates from around the world">
+    <meta property="og:image" content="https://www.echonewsgh.site/vite.svg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:site_name" content="EchoNews">
+    
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://www.echonewsgh.site">
+    <meta name="twitter:title" content="EchoNews - Breaking News & Latest Updates">
+    <meta name="twitter:description" content="Stay updated with the latest breaking news and updates from around the world">
+    <meta name="twitter:image" content="https://www.echonewsgh.site/vite.svg">
     <script>
         // Redirect to main site if accessed directly
         if (window.location.pathname === '/public' || window.location.pathname === '/public/') {
@@ -14,19 +31,7 @@
     </script>
 </head>
 <body>
-    <h1>EchoNews</h1>
-    <p>Welcome to EchoNews - Your Source for Breaking News and Latest Updates</p>
-    <p><a href="/">Go to Homepage</a></p>
-    
-    <!-- SEO Resources -->
-    <section>
-        <h2>Search Engine Resources</h2>
-        <ul>
-            <li><a href="/robots.txt">Robots.txt</a> - Search engine crawler instructions</li>
-            <li><a href="/sitemap.xml">Sitemap.xml</a> - Site structure for search engines</li>
-            <li><a href="/manifest.json">Web App Manifest</a> - Progressive Web App configuration</li>
-            <li><a href="/ads.txt">Ads.txt</a> - AdSense publisher verification</li>
-        </ul>
-    </section>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
 </body>
 </html>

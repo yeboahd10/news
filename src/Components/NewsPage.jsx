@@ -51,7 +51,7 @@ export default function NewsPage() {
         "name": "EchoNews",
         "logo": {
           "@type": "ImageObject",
-          "url": "https://echonewsgh.site/logo.png"
+          "url": "https://www.echonewsgh.site/vite.svg"
         }
       },
       "keywords": Array.isArray(item.tags) ? item.tags.join(", ") : item.category
