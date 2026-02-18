@@ -19,6 +19,53 @@ export default function NewsPage() {
   const [replyingId, setReplyingId] = useState(null)
   const [replyText, setReplyText] = useState('')
 
+  // Add JSON-LD structured data for SEO when item loads
+  useEffect(() => {
+    if (!item) return
+    
+    const toDate = (ts) => {
+      if (!ts) return new Date(0)
+      if (ts.toDate) return ts.toDate()
+      if (ts.seconds) return new Date(ts.seconds * 1000)
+      if (typeof ts === 'number') return new Date(ts)
+      return new Date(ts)
+    }
+
+    const createdDate = toDate(item.createdAt)
+    const structuredData = {
+      "@context": "https://schema.org",
+      "@type": "NewsArticle",
+      "headline": item.title,
+      "description": item.title,
+      "image": item.image,
+      "datePublished": createdDate.toISOString(),
+      "dateModified": item.updatedAt ? toDate(item.updatedAt).toISOString() : createdDate.toISOString(),
+      "author": {
+        "@type": "Person",
+        "name": item.editorName || "EchoNews"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "EchoNews",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://echonewsgh.site/logo.png"
+        }
+      },
+      "keywords": Array.isArray(item.tags) ? item.tags.join(", ") : item.category
+    }
+
+    // Create and append script tag for JSON-LD
+    const script = document.createElement('script')
+    script.type = 'application/ld+json'
+    script.textContent = JSON.stringify(structuredData)
+    document.head.appendChild(script)
+
+    return () => {
+      document.head.removeChild(script)
+    }
+  }, [item])
+
   useEffect(() => {
     ;(async () => {
       setLoading(true)
@@ -209,6 +256,19 @@ export default function NewsPage() {
         <span>By <strong>{item.editorName || 'Unknown Editor'}</strong></span>
         <span>Source: <strong>{item.source || 'Unknown Source'}</strong></span>
       </div>
+
+      {/* Tags display for SEO */}
+      {Array.isArray(item.tags) && item.tags.length > 0 && (
+        <div className="mb-4 pb-3 border-b">
+          <div className="flex flex-wrap gap-2">
+            {item.tags.map((tag, idx) => (
+              <span key={idx} className="inline-block bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-xs font-semibold hover:bg-blue-200 cursor-pointer">
+                #{tag}
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
 
       <div className="prose max-w-none text-black text-black mb-6 whitespace-pre-wrap">
         {item.details}

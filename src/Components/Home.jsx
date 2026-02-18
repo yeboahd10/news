@@ -37,7 +37,7 @@ export default function Home() {
             <div key={cat} className="mb-6">
               <h2 className="w-full text-xl font-semibold bg-black text-white p-2 rounded-md">{cat}</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
-                {[1, 2, 3].map(i => (
+                {[1, 2, 3, 4].map(i => (
                   <Skeleton key={i} variant="card" />
                 ))}
               </div>
@@ -49,7 +49,7 @@ export default function Home() {
         <>
           {CATEGORIES.map(cat => {
             const items = news.filter(n => n.category === cat)
-            const shown = items.slice(0, 3)
+            const shown = items.slice(0, 4)
             return (
               <div key={cat} className="mb-6">
                 <h2 className="w-full text-xl font-semibold bg-black text-white p-2 rounded-md">{cat}</h2>
@@ -71,6 +71,8 @@ export default function Home() {
                     else if (diffSec < 3600) timeLabel = `${Math.floor(diffSec / 60)}m ago`
                     else if (diffSec < 86400) timeLabel = `${Math.floor(diffSec / 3600)}h ago`
                     else timeLabel = `${Math.floor(diffSec / 86400)}d ago`
+                    
+                    const dateLabel = createdDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
 
                     return (
                       <article key={item.id} onClick={() => navigate(`/article/${item.id}`)} className="cursor-pointer flex items-center gap-4 bg-white/80 rounded-lg shadow-sm hover:shadow-md transition-shadow overflow-hidden">
@@ -79,7 +81,10 @@ export default function Home() {
                           <h3 className="text-sm font-semibold leading-snug text-black">{item.title}</h3>
                           <div className="flex items-center justify-between mt-2">
                             <div className="text-xs text-black">{item.category}</div>
-                            <div className="text-xs text-black">{timeLabel}</div>
+                            <div className="text-xs text-black flex flex-col items-end gap-0.5">
+                              <div>{dateLabel}</div>
+                              <div className="text-slate-600">{timeLabel}</div>
+                            </div>
                           </div>
                         </div>
                       </article>

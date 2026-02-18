@@ -13,6 +13,7 @@ export default function AdminEditor() {
   const [source, setSource] = useState('')
   const [editorName, setEditorName] = useState('')
   const [selected, setSelected] = useState([])
+  const [tags, setTags] = useState('')
   const [saving, setSaving] = useState(false)
   const [loading, setLoading] = useState(false)
 
@@ -30,6 +31,7 @@ export default function AdminEditor() {
           setText(data.details || '')
           setSource(data.source || '')
           setEditorName(data.editorName || '')
+          setTags(Array.isArray(data.tags) ? data.tags.join(', ') : '')
           setSelected(data.category ? [data.category] : [])
         } else {
           alert('Article not found')
@@ -63,7 +65,7 @@ export default function AdminEditor() {
       try {
         if (id) {
           // update existing doc: set to first selected category
-          const primary = selected[0]
+          const parsedTags = tags.split(',').map(t => t.trim()).filter(t => t)
           await updateDoc(doc(db, 'news', id), {
             category: primary,
             title: title.trim(),
@@ -71,6 +73,7 @@ export default function AdminEditor() {
             details: text || 'No additional details provided.',
             source: source.trim(),
             editorName: editorName.trim(),
+            tags: parsedTags,
             updatedAt: serverTimestamp()
           })
           // if additional categories selected, create new docs for them
@@ -82,10 +85,12 @@ export default function AdminEditor() {
             details: text || 'No additional details provided.',
             source: source.trim(),
             editorName: editorName.trim(),
+            tags: parsedTags,
             createdAt: serverTimestamp()
           }))
           if (extraTasks.length) await Promise.all(extraTasks)
         } else {
+          const parsedTags = tags.split(',').map(t => t.trim()).filter(t => t)
           const tasks = selected.map(cat => addDoc(collection(db, 'news'), {
             category: cat,
             title: title.trim(),
@@ -93,12 +98,14 @@ export default function AdminEditor() {
             details: text || 'No additional details provided.',
             source: source.trim(),
             editorName: editorName.trim(),
+            tags: parsedTags,
             createdAt: serverTimestamp()
           }))
           await Promise.all(tasks)
         }
 
         alert(id ? 'Updated successfully' : 'Published successfully')
+        setTags('')
         setTitle('')
         setImage('')
         setText('')
@@ -152,6 +159,12 @@ export default function AdminEditor() {
         <div>
           <label className="block text-sm font-medium mb-1 text-black">Editor's Name</label>
           <input value={editorName} onChange={e => setEditorName(e.target.value)} className="w-full border rounded px-3 py-2 text-black" placeholder="Enter editor's name" />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-1 text-black">Tags (SEO Keywords)</label>
+          <input value={tags} onChange={e => setTags(e.target.value)} className="w-full border rounded px-3 py-2 text-black" placeholder="e.g., politics, ghana, election, news (comma-separated)" />
+          <p className="text-xs text-slate-600 mt-1">Enter keywords separated by commas for better Google search indexing</p>
         </div>
 
         <div>
