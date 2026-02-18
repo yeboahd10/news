@@ -16,7 +16,7 @@ function App() {
         <main className="bg-white">
           <Routes>
             <Route path="/" element={<Home />} />
-            <Route path="/article/:id" element={<NewsPage />} />
+            <Route path="/article/:slug/:id" element={<NewsPage />} />
             <Route path="/category/:category" element={<CategoryPage />} />
             <Route path="/admin" element={<AdminEditor />} />
             <Route path="/admin/list" element={<AdminList />} />

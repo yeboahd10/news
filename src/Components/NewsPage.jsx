@@ -5,7 +5,7 @@ import { doc, getDoc, collection, addDoc, serverTimestamp, query, orderBy, onSna
 import Skeleton from './Skeleton'
 
 export default function NewsPage() {
-  const { id } = useParams()
+  const { id, slug } = useParams()
   const navigate = useNavigate()
   const [item, setItem] = useState(null)
   const [copied, setCopied] = useState(false)
@@ -19,7 +19,7 @@ export default function NewsPage() {
   const [replyingId, setReplyingId] = useState(null)
   const [replyText, setReplyText] = useState('')
 
-  // Add JSON-LD structured data for SEO when item loads
+  // Add JSON-LD structured data and Open Graph meta tags for SEO and social sharing
   useEffect(() => {
     if (!item) return
     
@@ -61,8 +61,37 @@ export default function NewsPage() {
     script.textContent = JSON.stringify(structuredData)
     document.head.appendChild(script)
 
+    // Add Open Graph meta tags for social media sharing with image preview
+    const metaTags = [
+      { property: 'og:title', content: item.title },
+      { property: 'og:description', content: item.title },
+      { property: 'og:image', content: item.image },
+      { property: 'og:type', content: 'article' },
+      { property: 'og:url', content: typeof window !== 'undefined' ? window.location.href : '' },
+      { name: 'twitter:title', content: item.title },
+      { name: 'twitter:description', content: item.title },
+      { name: 'twitter:image', content: item.image },
+      { name: 'twitter:card', content: 'summary_large_image' },
+      { name: 'description', content: item.title }
+    ]
+
+    const createdMetaTags = metaTags.map(tagData => {
+      const tag = document.createElement('meta')
+      Object.entries(tagData).forEach(([key, value]) => {
+        tag.setAttribute(key, value)
+      })
+      document.head.appendChild(tag)
+      return tag
+    })
+
+    // Update page title for browser tab and social shares
+    const originalTitle = document.title
+    document.title = `${item.title} - EchoNews`
+
     return () => {
       document.head.removeChild(script)
+      createdMetaTags.forEach(tag => document.head.removeChild(tag))
+      document.title = originalTitle
     }
   }, [item])
 
@@ -127,9 +156,62 @@ export default function NewsPage() {
     </div>
   )
 
-  if (!item) return (
-    <div className="max-w-4xl mx-auto px-4 py-8">Article not found.</div>
-  )
+  function formatText(text) {
+    if (!text) return text
+    // Replace **bold** with strong
+    text = text.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+    // Replace _italic_ with em
+    text = text.replace(/_([^_]+)_/g, '<em>$1</em>')
+    return text
+  }
+
+  function renderArticleContent() {
+    if (!item.details) return null
+    
+    const images = Array.isArray(item.images) ? item.images : []
+    console.log('Article images:', images)
+    console.log('Article details:', item.details)
+    
+    const parts = item.details.split(/(\[IMAGE:\d+\])/)
+    
+    return parts.map((part, idx) => {
+      const imageMatch = part.match(/\[IMAGE:(\d+)\]/)
+      if (imageMatch) {
+        const imageIndex = parseInt(imageMatch[1])
+        const imageUrl = images[imageIndex]
+        
+        console.log(`Image placeholder [IMAGE:${imageIndex}] found, URL:`, imageUrl)
+        
+        if (imageUrl && imageUrl.trim()) {
+          return (
+            <div key={idx} className="my-6 flex justify-center">
+              <div className="max-w-2xl w-full">
+                <img 
+                  src={imageUrl} 
+                  alt={`Article content ${imageIndex}`} 
+                  className="w-full rounded-lg shadow-md object-cover"
+                  loading="lazy"
+                />
+              </div>
+            </div>
+          )
+        } else {
+          console.warn(`Image URL missing for [IMAGE:${imageIndex}]`)
+          return null
+        }
+      }
+      
+      if (!part || !part.trim()) return null
+      const formattedText = formatText(part)
+      return (
+        <div 
+          key={idx} 
+          className="whitespace-pre-wrap text-base leading-7"
+          dangerouslySetInnerHTML={{ __html: formattedText }}
+        />
+      )
+    })
+  }
 
   const url = typeof window !== 'undefined' ? window.location.href : ''
 
@@ -270,8 +352,8 @@ export default function NewsPage() {
         </div>
       )}
 
-      <div className="prose max-w-none text-black text-black mb-6 whitespace-pre-wrap">
-        {item.details}
+      <div className="prose max-w-none text-black mb-6">
+        {renderArticleContent()}
       </div>
 
        <div className="flex items-center gap-3">

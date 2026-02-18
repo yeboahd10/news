@@ -3,12 +3,25 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { db } from '../firebase'
 import { collection, query, where, orderBy, getDocs } from 'firebase/firestore'
 import Skeleton from './Skeleton'
+import { createArticleUrl } from '../utils/slug'
 
 export default function CategoryPage() {
   const { category } = useParams()
   const navigate = useNavigate()
   const [items, setItems] = useState([])
   const [loading, setLoading] = useState(true)
+
+  const formatDate = (ts) => {
+    if (!ts) return ''
+    const date = ts.toDate ? ts.toDate() : (ts.seconds ? new Date(ts.seconds * 1000) : new Date(ts))
+    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+  }
+
+  const formatTime = (ts) => {
+    if (!ts) return ''
+    const date = ts.toDate ? ts.toDate() : (ts.seconds ? new Date(ts.seconds * 1000) : new Date(ts))
+    return date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })
+  }
 
   useEffect(() => {
     if (!category) return
@@ -63,10 +76,14 @@ export default function CategoryPage() {
           <div className="text-black">No articles in this category.</div>
         ) : (
           items.map(item => (
-            <article key={item.id} onClick={() => navigate(`/article/${item.id}`)} className="cursor-pointer bg-white rounded-md shadow-sm p-4 flex gap-4 hover:shadow-md">
+            <article key={item.id} onClick={() => navigate(createArticleUrl(item.title, item.id))} className="cursor-pointer bg-white rounded-md shadow-sm p-4 flex gap-4 hover:shadow-md transition-shadow">
               <img src={item.image} alt="" className="w-36 h-24 object-cover rounded" />
-              <div>
+              <div className="flex-1 flex flex-col justify-between">
                 <h2 className="text-sm font-semibold text-black">{item.title}</h2>
+                <div className="flex items-center gap-4 text-xs text-slate-600">
+                  <span>{formatDate(item.createdAt)}</span>
+                  <span>{formatTime(item.createdAt)}</span>
+                </div>
               </div>
             </article>
           ))

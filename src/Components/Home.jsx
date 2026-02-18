@@ -4,6 +4,7 @@ import { CATEGORIES } from '../data/news'
 import { db } from '../firebase'
 import { collection, getDocs, query, orderBy } from 'firebase/firestore'
 import Skeleton from './Skeleton'
+import { createArticleUrl } from '../utils/slug'
 
 export default function Home() {
   const navigate = useNavigate()
@@ -75,7 +76,7 @@ export default function Home() {
                     const dateLabel = createdDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
 
                     return (
-                      <article key={item.id} onClick={() => navigate(`/article/${item.id}`)} className="cursor-pointer flex items-center gap-4 bg-white/80 rounded-lg shadow-sm hover:shadow-md transition-shadow overflow-hidden">
+                      <article key={item.id} onClick={() => navigate(createArticleUrl(item.title, item.id))} className="cursor-pointer flex items-center gap-4 bg-white/80 rounded-lg shadow-sm hover:shadow-md transition-shadow overflow-hidden">
                         <img src={item.image} alt="" className="w-36 h-24 object-cover rounded" />
                         <div className="p-4 flex-1 flex flex-col justify-center">
                           <h3 className="text-sm font-semibold leading-snug text-black">{item.title}</h3>
