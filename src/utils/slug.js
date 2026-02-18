@@ -19,3 +19,38 @@ export function createArticleUrl(title, id) {
 export function extractIdFromUrl(slug, id) {
   return id
 }
+
+// Ensure image URL is absolute (for social media sharing)
+export function getAbsoluteImageUrl(imageUrl) {
+  if (!imageUrl) return 'https://echonewsgh.site/logo.png'
+  
+  // If already absolute, return as-is
+  if (imageUrl.startsWith('http://') || imageUrl.startsWith('https://')) {
+    return imageUrl
+  }
+  
+  // If relative path, make it absolute with live domain
+  if (imageUrl.startsWith('/')) {
+    return 'https://echonewsgh.site' + imageUrl
+  }
+  
+  // Otherwise add domain
+  return 'https://echonewsgh.site/' + imageUrl
+}
+
+// Get current page absolute URL
+export function getAbsolutePageUrl() {
+  if (typeof window === 'undefined') {
+    return 'https://echonewsgh.site'
+  }
+  
+  const url = window.location.href
+  
+  // If on localhost, replace with live domain
+  if (url.includes('localhost')) {
+    const path = window.location.pathname
+    return 'https://echonewsgh.site' + path
+  }
+  
+  return url
+}

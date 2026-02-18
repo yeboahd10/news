@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
+import { Helmet } from 'react-helmet-async'
 import { db } from '../firebase'
 import { doc, getDoc, collection, addDoc, serverTimestamp, query, orderBy, onSnapshot, updateDoc, deleteDoc, arrayUnion, arrayRemove } from 'firebase/firestore'
 import Skeleton from './Skeleton'
+import { getAbsoluteImageUrl, getAbsolutePageUrl } from '../utils/slug'
 
 export default function NewsPage() {
   const { id, slug } = useParams()
@@ -19,7 +21,7 @@ export default function NewsPage() {
   const [replyingId, setReplyingId] = useState(null)
   const [replyText, setReplyText] = useState('')
 
-  // Add JSON-LD structured data and Open Graph meta tags for SEO and social sharing
+  // Add JSON-LD structured data and proper meta tags through Helmet
   useEffect(() => {
     if (!item) return
     
@@ -37,7 +39,7 @@ export default function NewsPage() {
       "@type": "NewsArticle",
       "headline": item.title,
       "description": item.title,
-      "image": item.image,
+      "image": getAbsoluteImageUrl(item.image),
       "datePublished": createdDate.toISOString(),
       "dateModified": item.updatedAt ? toDate(item.updatedAt).toISOString() : createdDate.toISOString(),
       "author": {
@@ -61,37 +63,10 @@ export default function NewsPage() {
     script.textContent = JSON.stringify(structuredData)
     document.head.appendChild(script)
 
-    // Add Open Graph meta tags for social media sharing with image preview
-    const metaTags = [
-      { property: 'og:title', content: item.title },
-      { property: 'og:description', content: item.title },
-      { property: 'og:image', content: item.image },
-      { property: 'og:type', content: 'article' },
-      { property: 'og:url', content: typeof window !== 'undefined' ? window.location.href : '' },
-      { name: 'twitter:title', content: item.title },
-      { name: 'twitter:description', content: item.title },
-      { name: 'twitter:image', content: item.image },
-      { name: 'twitter:card', content: 'summary_large_image' },
-      { name: 'description', content: item.title }
-    ]
-
-    const createdMetaTags = metaTags.map(tagData => {
-      const tag = document.createElement('meta')
-      Object.entries(tagData).forEach(([key, value]) => {
-        tag.setAttribute(key, value)
-      })
-      document.head.appendChild(tag)
-      return tag
-    })
-
-    // Update page title for browser tab and social shares
-    const originalTitle = document.title
-    document.title = `${item.title} - EchoNews`
-
     return () => {
-      document.head.removeChild(script)
-      createdMetaTags.forEach(tag => document.head.removeChild(tag))
-      document.title = originalTitle
+      if (document.head.contains(script)) {
+        document.head.removeChild(script)
+      }
     }
   }, [item])
 
@@ -329,10 +304,30 @@ export default function NewsPage() {
   }
 
   return (
-    <article className={`max-w-4xl mx-auto px-4 py-8 transition-opacity duration-300 ${visible ? 'opacity-100' : 'opacity-0'}`}>
-      <button onClick={() => navigate(-1)} className="mb-4 text-sm text-slate-700 hover:underline">← Back</button>
-      <h1 className="text-2xl font-bold mb-4 text-black ">{item.title}</h1>
-      <img src={item.image} alt={item.title} className="w-full h-auto rounded-md mb-6 object-cover" />
+    <>
+      <Helmet>
+        <title>{item.title} - EchoNews</title>
+        <meta name="description" content={item.title} />
+        <meta property="og:title" content={item.title} />
+        <meta property="og:description" content={item.title} />
+        <meta property="og:image" content={getAbsoluteImageUrl(item.image)} />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta property="og:type" content="article" />
+        <meta property="og:url" content={getAbsolutePageUrl()} />
+        <meta property="og:site_name" content="EchoNews" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={item.title} />
+        <meta name="twitter:description" content={item.title} />
+        <meta name="twitter:image" content={getAbsoluteImageUrl(item.image)} />
+        <meta name="article:author" content={item.editorName || 'EchoNews'} />
+        <meta name="article:section" content={item.category} />
+        <link rel="canonical" href={getAbsolutePageUrl()} />
+      </Helmet>
+      <article className={`max-w-4xl mx-auto px-4 py-8 transition-opacity duration-300 ${visible ? 'opacity-100' : 'opacity-0'}`}>
+        <button onClick={() => navigate(-1)} className="mb-4 text-sm text-slate-700 hover:underline">← Back</button>
+        <h1 className="text-2xl font-bold mb-4 text-black ">{item.title}</h1>
+        <img src={item.image} alt={item.title} className="w-full h-auto rounded-md mb-6 object-cover" />
 
       <div className="mb-4 flex items-center justify-between text-sm text-slate-600 border-b pb-3">
         <span>By <strong>{item.editorName || 'Unknown Editor'}</strong></span>
@@ -472,6 +467,7 @@ export default function NewsPage() {
       </section>
 
       
-    </article>
+      </article>
+    </>
   )
 }
