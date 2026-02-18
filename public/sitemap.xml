@@ -4,7 +4,7 @@
   
   <!-- Homepage -->
   <url>
-    <loc>https://your-domain.com</loc>
+    <loc>https://echonewsgh.site</loc>
     <lastmod>2026-02-18</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
@@ -12,28 +12,28 @@
   
   <!-- Category Pages -->
   <url>
-    <loc>https://echonewsgh.site/category/Homey</loc>
+    <loc>https://echonewsgh.site/category/Home</loc>
     <lastmod>2026-02-18</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
   </url>
   
   <url>
-    <loc>https://your-domain.com/category/Politics</loc>
+    <loc>https://echonewsgh.site/category/Politics</loc>
     <lastmod>2026-02-18</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
   </url>
   
   <url>
-    <loc>https://your-domain.com/category/entertainment</loc>
+    <loc>https://echonewsgh.site/category/Entertainment</loc>
     <lastmod>2026-02-18</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
   </url>
   
   <url>
-    <loc>https://your-domain.com/category/sports</loc>
+    <loc>https://echonewsgh.site/category/Sports</loc>
     <lastmod>2026-02-18</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
@@ -42,7 +42,7 @@
   <!-- Add individual news articles here (dynamically generated) -->
   <!-- Example: -->
   <!-- <url>
-    <loc>https://your-domain.com/news/article-title</loc>
+    <loc>https://echonewsgh.site/news/article-title</loc>
     <lastmod>2026-02-18</lastmod>
     <changefreq>never</changefreq>
     <priority>0.6</priority>
