@@ -1,0 +1,4 @@
+# AdSense ads.txt file for authorized resellers/partners
+# Replace with your actual publisher information
+
+google.com, ca-pub-3405984608968210, DIRECT, f08c47fec0942fa0
