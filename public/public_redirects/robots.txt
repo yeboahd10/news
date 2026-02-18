@@ -1,0 +1,12 @@
+# Google, Bing, and other search engine crawlers
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /private
+Disallow: /temp
+
+# Crawl delay
+Crawl-delay: 1
+
+# Sitemaps
+Sitemap: https://echonewsgh.site/sitemap.xml
