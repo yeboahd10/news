@@ -96,13 +96,15 @@ export const handler = async (event) => {
     }
     </script>
     
-    <meta http-equiv="refresh" content="0; url=/">
 </head>
 <body>
-    <p>Redirecting to article...</p>
-    <script>
-        window.location.replace('/');
-    </script>
+    <main>
+      <article>
+        <h1>${escapeHtml(article.title)}</h1>
+        <p>${escapeHtml(description)}</p>
+        <p><a href="${pageUrl}">Read on EchoNews</a></p>
+      </article>
+    </main>
 </body>
 </html>`;
 

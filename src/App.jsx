@@ -8,6 +8,7 @@ import NewsPage from './Components/NewsPage'
 import CategoryPage from './Components/CategoryPage'
 import AdminEditor from './Components/AdminEditor'
 import AdminList from './Components/AdminList'
+import PrivacyPolicy from './Components/PrivacyPolicy'
 
 function App() {
   return (
@@ -20,13 +21,15 @@ function App() {
               <Route path="/" element={<Home />} />
               <Route path="/article/:slug/:id" element={<NewsPage />} />
               <Route path="/category/:category" element={<CategoryPage />} />
+              <Route path="/privacy" element={<PrivacyPolicy />} />
               <Route path="/admin" element={<AdminEditor />} />
               <Route path="/admin/list" element={<AdminList />} />
               <Route path="/admin/edit/:id" element={<AdminEditor />} />
             </Routes>
           </main>
           <footer className=" text-black text-center py-2 text-sm">
-            © EchoNews 2026. All rights reserved.
+            <div className="mb-1">© EchoNews 2026. All rights reserved.</div>
+            <div><a href="/privacy" className="text-sm text-sky-600 hover:underline">Privacy Policy</a></div>
           </footer>
         </div>
       </BrowserRouter>
