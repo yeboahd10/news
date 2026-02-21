@@ -34,6 +34,67 @@
     <!-- Sitemap & Feed -->
     <link rel="sitemap" type="application/xml" href="/sitemap.xml" />
     
+    <!-- JSON-LD Structured Data for SEO & Category Sitelinks -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "EchoNews",
+      "url": "https://echonewsgh.site",
+      "logo": "https://echonewsgh.site/src/assets/logo.png",
+      "description": "EchoNews brings you breaking news, trending stories, and in-depth coverage across multiple categories",
+      "sameAs": [
+        "https://facebook.com/echonewsgh",
+        "https://twitter.com/echonewsgh",
+        "https://instagram.com/echonewsgh"
+      ],
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "contactType": "Editorial",
+        "url": "https://echonewsgh.site/contact"
+      }
+    }
+    </script>
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "EchoNews",
+      "url": "https://echonewsgh.site",
+      "searchAction": {
+        "@type": "SearchAction",
+        "target": {
+          "@type": "EntryPoint",
+          "urlTemplate": "https://echonewsgh.site/?search={search_term_string}"
+        },
+        "query-input": "required name=search_term_string"
+      },
+      "hasPartOfCatalog": [
+        {
+          "@type": "CollectionPage",
+          "name": "Home",
+          "url": "https://echonewsgh.site/category/Home"
+        },
+        {
+          "@type": "CollectionPage",
+          "name": "Politics",
+          "url": "https://echonewsgh.site/category/Politics"
+        },
+        {
+          "@type": "CollectionPage",
+          "name": "Entertainment",
+          "url": "https://echonewsgh.site/category/Entertainment"
+        },
+        {
+          "@type": "CollectionPage",
+          "name": "Sports",
+          "url": "https://echonewsgh.site/category/Sports"
+        }
+      ]
+    }
+    </script>
+    
     <!-- PWA Manifest -->
     <link rel="manifest" href="/manifest.json" />
     <meta name="theme-color" content="#2563eb" />

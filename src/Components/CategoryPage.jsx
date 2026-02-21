@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
+import { Helmet } from 'react-helmet-async'
 import { db } from '../firebase'
 import { collection, query, where, orderBy, getDocs } from 'firebase/firestore'
 import Skeleton from './Skeleton'
@@ -57,9 +58,84 @@ export default function CategoryPage() {
   if (!category) return null
 
   const key = decodeURIComponent(category)
+  
+  // Generate category description
+  const categoryDescriptions = {
+    'Politics': 'Latest political news, government updates, and policy coverage from EchoNews',
+    'Entertainment': 'Entertainment news, celebrity updates, movies, music and showbiz stories',
+    'Sports': 'Sports news, scores, rankings, and athletic updates from around the world',
+    'Home': 'Latest breaking news and trending stories from Ghana and beyond'
+  }
+  
+  const description = categoryDescriptions[key] || `${key} news and articles from EchoNews`
+  const canonicalUrl = `https://echonewsgh.site/category/${key}`
+  
+  // Breadcrumb schema
+  const breadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Home",
+        "item": "https://echonewsgh.site"
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": key,
+        "item": canonicalUrl
+      }
+    ]
+  }
+  
+  // Category collection page schema
+  const collectionSchema = {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    "name": `${key} News - EchoNews`,
+    "description": description,
+    "url": canonicalUrl,
+    "mainEntity": {
+      "@type": "Thing",
+      "name": key
+    },
+    "isPartOf": {
+      "@type": "WebSite",
+      "name": "EchoNews",
+      "url": "https://echonewsgh.site"
+    }
+  }
 
   return (
-    <section className="max-w-4xl mx-auto px-4 py-8">
+    <>
+      <Helmet>
+        <title>{key} News - EchoNews | Latest Breaking News</title>
+        <meta name="description" content={description} />
+        <meta name="keywords" content={`${key}, news, breaking news, ${key} updates`} />
+        <meta property="og:type" content="website" />
+        <meta property="og:title" content={`${key} News - EchoNews`} />
+        <meta property="og:description" content={description} />
+        <meta property="og:url" content={canonicalUrl} />
+        <meta property="og:site_name" content="EchoNews" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={`${key} News - EchoNews`} />
+        <meta name="twitter:description" content={description} />
+        <link rel="canonical" href={canonicalUrl} />
+        
+        {/* Breadcrumb Schema */}
+        <script type="application/ld+json">
+          {JSON.stringify(breadcrumbSchema)}
+        </script>
+        
+        {/* Collection Page Schema */}
+        <script type="application/ld+json">
+          {JSON.stringify(collectionSchema)}
+        </script>
+      </Helmet>
+    
+      <section className="max-w-4xl mx-auto px-4 py-8">
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold text-black">{key}</h1>
         <button onClick={() => navigate(-1)} className="text-sm px-3 py-1 bg-slate-200 rounded-md text-black">Back</button>
@@ -90,5 +166,6 @@ export default function CategoryPage() {
         )}
       </div>
     </section>
+    </>
   )
 }

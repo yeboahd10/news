@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { Helmet } from 'react-helmet-async'
 import { CATEGORIES } from '../data/news'
 import { db } from '../firebase'
 import { collection, getDocs, query, orderBy } from 'firebase/firestore'
@@ -24,9 +25,36 @@ export default function Home() {
       }
     })()
   }, [])
+  
+  // Homepage schema
+  const homepageSchema = {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "name": "EchoNews - Latest Breaking News & Updates",
+    "description": "Stay updated with the latest news from around the world. EchoNews brings you breaking news, trending stories, and in-depth coverage across multiple categories.",
+    "url": "https://echonewsgh.site",
+    "isPartOf": {
+      "@type": "WebSite",
+      "name": "EchoNews",
+      "url": "https://echonewsgh.site"
+    }
+  }
 
   return (
-    <section className="max-w-6xl mx-auto px-4 py-8 space-y-6">
+    <>
+      <Helmet>
+        <title>EchoNews - Latest Breaking News & Updates</title>
+        <meta name="description" content="Stay updated with the latest news from around the world. EchoNews brings you breaking news, trending stories, and in-depth coverage across multiple categories." />
+        <meta name="keywords" content="news, breaking news, latest news, trending, world news, politics, entertainment, sports" />
+        <link rel="canonical" href="https://echonewsgh.site" />
+        
+        {/* Homepage Schema */}
+        <script type="application/ld+json">
+          {JSON.stringify(homepageSchema)}
+        </script>
+      </Helmet>
+    
+      <section className="max-w-6xl mx-auto px-4 py-8 space-y-6">
       <header className="flex items-center justify-between">
         <h1 className="text-2xl text-black font-extrabold">Top Trending</h1>
       </header>
@@ -106,6 +134,7 @@ export default function Home() {
         </>
       )}
     </section>
+    </>
   )
 }
 
